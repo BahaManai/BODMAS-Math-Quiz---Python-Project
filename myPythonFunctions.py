@@ -4,36 +4,46 @@ import os
 
 #Tâche 2
 def getUserPoint(nom):
+    L = []
     if not os.path.exists('userScores.txt'):
-        with open('userScores.txt', 'w') as file:
-            file.write("")
-    with open('userScores.txt', 'r') as file:
-        for line in file:
-            utilisateur, score = line.strip().split(', ')
-            if utilisateur == nom:
-                return score
+        file = open('userScores.txt', 'w')
+        file.write("")
+        file.close()
+
+    file = open('userScores.txt', 'r')
+    for line in file:
+        utilisateur, score = line.strip().split(', ')
+        L.append((utilisateur, int(score)))
+        if utilisateur == nom:
+            file.close()
+            return score
+    file.close()
     return "-1"
 
 #Tâche 3
 def updateUserPoints(newUser, userName, score):
     score = str(score)
     if newUser:
-        with open('userScores.txt', 'a') as file:
-            file.write(userName+", "+score+"\n")
+        file = open('userScores.txt', 'a')
+        file.write(userName + ", " + score + "\n")
+        file.close()
     else:
-        with open('userScores.txt', 'r') as file, open('tempScores.txt', 'w') as temp_file:
-            for line in file:
-                name, sc = line.strip().split(', ')
-                if name == userName:
-                    sc = score
-                temp_file.write(name+", "+sc+"\n")
+        file = open('userScores.txt', 'r')
+        temp_file = open('tempScores.txt', 'w')
+        for line in file:
+            name, sc = line.strip().split(', ')
+            if name == userName:
+                sc = score
+            temp_file.write(name + ", " + sc + "\n")
+        file.close()
+        temp_file.close()
         os.remove('userScores.txt')
         os.rename('tempScores.txt', 'userScores.txt')
 
 #Tâche 4
 def generateQuestion():
     operandList = [0,0,0,0,0]
-    operatorList = ["","","","",""]
+    operatorList = ["","","",""]
     operatorDict = {
         1: "+",
         2: "-",
@@ -46,12 +56,12 @@ def generateQuestion():
         operandList = [random.randint(1, 9) for i in range(5)]
 
     #Action 4.2
-    operatorList = [operatorDict[random.randint(1, 4)]]
-    for i in range(3):
+    operatorList[0] = operatorDict[random.randint(1, 4)]
+    for i in range(1, 4):
         operator = operatorDict[random.randint(1, 4)]
-        while operator == "**" and operatorList[-1] == "**":
+        while operator == "**" and operatorList[i - 1] == "**":
             operator = operatorDict[random.randint(1, 4)]
-        operatorList.append(operator)
+        operatorList[i] = operator
 
     #Action 4.3
     questionString = ""
@@ -75,6 +85,3 @@ def generateQuestion():
                     return 0
             except ValueError:
                 print("Veuillez entrer un entier !")
-
-
-
